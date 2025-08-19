@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product/Service Entry Form</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+  <link rel="icon" type="image/x-icon" href="{% static 'sowaf/images/favicon.ico' %}">
+  <link rel="stylesheet" href="{% static 'sowaf/styles/style.css' %}"/>
+  <link rel="stylesheet" href="{% static 'sowaf/styles/bootsrap.min.css' %}"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Poppins", sans-serif; font-size: 14px; }
+    body { background: #f4f6f8; padding: 30px; }
+    .container { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); width: 90%; margin: auto; }
+    h2.title { text-align: center; color: #39B54B; margin-bottom: 25px; font-size: 28px; font-weight: 700; }
+    .section-wrapper { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-weight: 500; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .form-group input[type="checkbox"] { width: auto; margin-top: 10px; }
+    .collapsible { cursor: pointer; padding: 10px; background-color: #f1f1f1; border: none; border-radius: 6px; font-weight: 600; margin-bottom: 10px; width: 100%; text-align: left; }
+    .content { display: none; }
+    .content.active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #fafafa; }
+    .btn-light-green { background-color: #d2f4dc; color: #2a8b3f; padding: 6px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; }
+    .btn-light-green:hover { background-color: #c3eecf; }
+    .delete-btn { color: #d11a2a; background: none; border: none; font-size: 18px; cursor: pointer; }
+    .footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px; gap: 10px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-cancel { background: #f5f5f5; color: #333; }
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown .btn-green { background: #39B54B; color: #fff; }
+    .dropdown-menu { display: none; position: absolute; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 100; width: 160px; }
+    .dropdown-menu button { width: 100%; padding: 10px 16px; background: none; border: none; text-align: left; cursor: pointer; white-space: nowrap; }
+    .dropdown:hover .dropdown-menu { display: block; }
+  </style>
+</head>
+<body>
+  
+<div class="container">
+  <h2 class="title">Product/Service Entry Form</h2>
+
+  <div class="section-wrapper">
+    <form method="POST" action="{% url 'sales:add-products' %}">
+  {% csrf_token %}
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Type</label>
+        <select id="typeSelect" name="type" onchange="handleTypeChange()">
+          <option value="Non-Inventory" {% if product.type == "Non-Inventory" %}selected{% endif %}>Non-Inventory</option>
+          <option value="Inventory" {% if product.type == "Inventory" %}selected{% endif %}>Inventory</option>
+          <option value="Service" {% if product.type == "Service" %}selected{% endif %}>Service</option>
+          <option value="Bundle" {% if product.type == "Bundle" %}selected{% endif %}>Bundle</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Name</label><input name="name" type="text"></div>
+      <div class="form-group"><label>SKU</label><input name="sku" type="text"></div>
+      <div class="form-group"><label>Category</label><input name="category" type="text"></div>
+      <div class="form-group"><label>Class</label><input name="class_field" type="text"></div>
+      <div class="form-group"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+    </div>
+
+    <div class="form-group">
+      <input name="sellCheckbox" type="checkbox" id="sellCheckbox">
+      <label for="sellCheckbox">I sell this product/service to my customers.</label>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group"><label>Sales Price / Rate</label><input name="sales_price" type="number"></div>
+      <div class="form-group">
+        <label>Income Account</label>
+        <select name="income_account">
+          <option value="Sales" {% if product.income_account == "Sales" %}selected{% endif %}>Sales</option>
+          <option value="Services Income" {% if product.income_account == "Services Income" %}selected{% endif %}>Services Income</option>
+          <option value="Other Income" {% if product.income_account == "Other Income" %}selected{% endif %}>Other Income</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-wrapper">
+    <button class="collapsible" type="button" onclick="toggleSection(this)">Purchasing Information</button>
+    <div class="content">
+      <div class="form-group">
+        <input name="purchaseCheckbox" type="checkbox" id="purchaseCheckbox">
+        <label for="purchaseCheckbox">I purchase this product/service from a supplier.</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="bundleExtras" class="section-wrapper" style="display: none;">
+    <div class="form-group">
+      <button class="collapsible" type="button" onclick="toggleSection(this)">Bundles Information</button>
+      <input name="displayBundleContents" type="checkbox" id="displayBundleContents" onchange="toggleBundleTable()">
+      <label for="displayBundleContents">Display contents when printing or sending transactions.</label>
+    </div>
+
+    <div id="bundleTableWrapper" style="display: none;">
+      <table id="bundle-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product/Service</th>
+            <th>Qty</th>
+            <th>Operations</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="btn-light-green" onclick="addBundleRow()">Add Line</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="{% url 'sales:sales' %}" class="btn btn-green" style="text-decoration:none;">Cancel</a>
+        <div></div>
+    <button class="btn btn-light-green" onclick="window.print()">Print / Preview</button>
+        <div class="dropdown">
+          <button type="submit" class="btn btn-green">Save ▼</button>
+          <div class="dropdown-menu">
+            <button type="submit" name="save_action" style="font-size: 1em;" value="save">Save</button>
+            <button type="submit" name="save_action" style="font-size: 1em;" value="save&new">Save & New</button>
+            <button type="submit" name="save_action" style="font-size: 1em;" value="save&close">Save & Close
+
+    </button>
+          </div>
+        </div>
+  </form>
+  </div>
+</div>
+<script src=" {% static 'sowaf/styles/script.js' %} "></script>
+<script>
+  function toggleSection(btn) {
+    const content = btn.nextElementSibling;
+    content.classList.toggle("active");
+  }
+
+  function handleTypeChange() {
+    const type = document.getElementById("typeSelect").value;
+    document.getElementById("bundleExtras").style.display = type === "Bundle" ? "block" : "none";
+  }
+
+  function toggleBundleTable() {
+    const checked = document.getElementById("displayBundleContents").checked;
+    document.getElementById("bundleTableWrapper").style.display = checked ? "block" : "none";
+  }
+
+  function addBundleRow() {
+    const table = document.querySelector("#bundle-table tbody");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td></td>
+      <td><input type="text" name="bundle_product_name[]" /></td>
+      <td><input type="number" name="bundle_product_qty[]" /></td>
+      <td><button class="delete-btn bx bx-trash" onclick="deleteRow(this)"></button></td>
+    `;
+    table.appendChild(row);
+    updateRowNumbers();
+  }
+
+  function deleteRow(button) {
+    button.closest("tr").remove();
+    updateRowNumbers();
+  }
+
+  function updateRowNumbers() {
+    document.querySelectorAll("#bundle-table tbody tr").forEach((row, index) => {
+      row.cells[0].textContent = index + 1;
+    });
+  }
+
+  function saveForm(action) {
+    alert(`Form saved with action: ${action}`);
+  }
+</script>
+</body>
+</html>

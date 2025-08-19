@@ -1,0 +1,104 @@
+{% load static %}
+{% include 'includes/navbar.html' %}
+  <style>
+    @media only screen and (max-width: 600px) {
+  #action{
+    height: 50px;
+    width: 20px;
+    background-color: green;
+    margin-left: 10%;
+    display: flex;
+    flex-wrap: 1px;
+    justify-content: space-between;
+    margin-top: 5%;
+  }
+   #search{
+    display: flex;
+    width: 40%;
+    margin-top: 0px;
+  }
+  h1{
+    color: white;
+  }
+  .tabs{
+    margin-top: 10%;
+  }
+  .button{
+    width: 30%;
+    height: 5vh;
+  }
+
+  #main_body {
+width: 100%;
+margin: 0;
+padding-top: 35%;
+height: 100vh;
+
+}
+  #items{
+display: block;
+margin: -3%;
+padding: 3%;
+}
+#things{
+   margin: 3%;
+   width: 100%;
+   
+}
+#Overview{
+display: block;
+margin-right: 5%;
+padding: 3%;
+}
+.overviews{
+   margin: 3%;
+   width: 100%;
+}
+}
+</style>
+{% include 'includes/sidebar.html' %}
+    <div class="action" id="action">
+      <h1>HOME</h1>
+      <div class="search_bar" id="search">
+        <input type="text" placeholder="Search Home" />
+      </div>
+        <button class="button">
+          <span id="customize" class="button_text">CUSTOMIZE</span>
+          <span id="customize" class="button_icon">
+            <i class='bx bxs-customize' ></i>
+          </span>
+        </button>
+    </div>
+    <div class="main_body" id="main_body">
+
+
+      <div class="tabs">
+        <input type="radio" class="tabs_radio" name="tabs-example" id="tab1" checked>
+        <label for="tab1" class="tabs_label">Get things done</label>
+            <div class="tab-content">
+              <div id="Overview">
+                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-receipt'></i>Add receipt</div></a>
+                <a href="{% url 'sowaf:add-supplier' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bxs-truck' ></i>Add supplier</div></a>
+                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-money-withdraw' ></i>Add expense</div></a>
+                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-credit-card'></i>Add bill</div></a>
+                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-credit-card'></i>Pay bill</div></a>
+                <a href="{% url 'sowaf:add-customer' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-user-voice'></i>Add customer</div></a>
+                <a href="{% url 'sales:add-invoice' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-file'></i>Add invoice</div></a>
+                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-timer' ></i>Track time</div></a>
+              </div>
+            </div>
+          <input type="radio" class="tabs_radio" name="tabs-example" id="tab2">
+          <label for="tab2" class="tabs_label">Business Overview</label>
+            <div class="tab-content">
+              <div id="Overview">
+                <div class="overviews" id="Account-balance">Bank Account Balance</div>
+                <div class="overviews" id="Sales-overview">Sales</div>
+                <div class="overviews" id="Expenses-overview">Expenses</div>
+                <div class="overviews" id="Invoices">Invoices</div>
+                <div class="overviews" id="Outstanding-bills">Outstanding Bills</div>
+                <div class="overviews" id="Profit-loss">Profit and Loss</div>
+              </div>
+            </div>
+      </div>
+    </div>
+ {% include 'includes/footer.html' %}

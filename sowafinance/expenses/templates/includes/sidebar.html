@@ -1,0 +1,191 @@
+
+    {% load static %}
+    <style>
+    @media only screen and (max-width: 600px) {
+  #sidebar{
+    margin-top: 30%;
+    padding-top: 50%;
+    width: 4%;
+    margin-left: 0;
+  }
+}
+</style>
+    <!-- sidebar -->
+    <nav class="sidebar">
+      <div class="menu_content" >
+        <ul class="menu_items">
+          <li class="item" id="sidebar">
+            <div href="#" class="nav_link submenu_item">
+              <span class="navlink_icon">
+                <i class="bx bx-grid-alt"></i>
+              </span>
+              <span class="navlink">Overview</span>
+              <i class="bx bx-chevron-right arrow-left"></i>
+            </div>
+
+            <ul class="menu_items submenu">
+              <li class="item">
+                <a href="./login_signup.html" class="nav_link">
+                  <span class="navlink_icon">
+                    <i class='bx bxs-user-account' ></i>
+                  </span>
+                  <span class="navlink">Accounts</span>
+                </a>
+              </li>   <li class="item">
+                <a href="#" class="nav_link">
+                  <span class="navlink_icon">
+                    <i class='bx bxs-pie-chart-alt-2' ></i>
+                  </span>
+                  <span class="navlink">Insights</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <!-- end -->
+        </ul>
+
+        <ul class="menu_items">
+          <div class="menu_title menu_editor"></div>
+          <!-- duplicate these li tag if you want to add or remove navlink only -->
+          <!-- Start -->
+          <li class="item">
+            <a href="{% url 'sowaf:home' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-home' ></i>
+              </span>
+              <span class="navlink">Home</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:tasks' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-task' ></i>
+              </span>
+              <span class="navlink">Tasks</span>
+            </a>
+          </li>
+          <li class="item" >
+            <a href="{% url 'sowaf:clients' %}" class="nav_link" id="">
+              <span class="navlink_icon">
+                <i class='bx bx-body'></i>
+              </span>
+              <span class="navlink">Clients</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:customers' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-user-voice'></i>
+              </span>
+              <span class="navlink">Customers</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sales:sales' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-money' ></i>
+              </span>
+              <span class="navlink">Sales</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:suppliers' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bxs-truck' ></i>
+              </span>
+              <span class="navlink">Suppliers</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'expenses:expenses' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-money-withdraw' ></i>
+              </span>
+              <span class="navlink">Expenses</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:employees' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bxs-briefcase' ></i>
+              </span>
+              <span class="navlink">Employees</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:reports' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bxs-report' ></i>
+              </span>
+              <span class="navlink">Reports</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:taxes' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bxs-wallet-alt' ></i>
+              </span>
+              <span class="navlink">Taxes</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:assets' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-building-house' ></i>
+              </span>
+              <span class="navlink">Assets</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="{% url 'sowaf:miscellaneous' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bxl-graphql' ></i>
+              </span>
+              <span class="navlink">Miscellaneous</span>
+            </a>
+          </li>
+          
+          <!-- End -->
+
+        <ul class="menu_items">
+          <div class="menu_title menu_setting"></div>
+          <li class="item">
+            <a href="#" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-help-circle' ></i>
+              </span>
+              <span class="navlink">Help</span>
+            </a>
+          </li>
+          <li class="item mb-5">
+            <a href="#" class="nav_link">
+              <span class="navlink_icon">
+                <i class="bx bx-cog"></i>
+              </span>
+              <span class="navlink">Setting</span>
+            </a>
+          </li>
+          <li class="item mb-5">
+            <a href="{% url 'logout' %}" class="nav_link">
+              <span class="navlink_icon">
+                <i class='bx bx-log-out'></i>
+              </span>
+              <span class="navlink">Logout</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Sidebar Open / Close -->
+        <div class="bottom_content my-5">
+          <div class="bottom expand_sidebar">
+            <span> Expand</span>
+            <i class='bx bx-log-in' ></i>
+          </div>
+          <div class="bottom collapse_sidebar">
+            <span> Collapse</span>
+            <i class='bx bx-log-out'></i>
+          </div>
+        </div>
+        
+      </div>
+    </nav>
