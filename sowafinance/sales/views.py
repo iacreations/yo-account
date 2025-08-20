@@ -125,7 +125,7 @@ def individual_invoice(request):
 
 def add_receipt(request):
     
-    return render(request, 'Receipt_form.html', {})
+    return render(request, 'receipt_form.html', {})
 # receive payment form view
 
 def add_payment(request):

@@ -77,12 +77,12 @@ padding: 3%;
         <label for="tab1" class="tabs_label">Get things done</label>
             <div class="tab-content">
               <div id="Overview">
-                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-receipt'></i>Add receipt</div></a>
+                <a href="{% url 'sales:add-receipt' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-receipt'></i>Add receipt</div></a>
                 <a href="{% url 'sowaf:add-supplier' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bxs-truck' ></i>Add supplier</div></a>
-                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-money-withdraw' ></i>Add expense</div></a>
-                <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-credit-card'></i>Add bill</div></a>
+                <a href="{% url 'expenses:add-expenses' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-money-withdraw' ></i>Add expense</div></a>
+                <a href="{% url 'expenses:add-bill' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-credit-card'></i>Add bill</div></a>
                 <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-credit-card'></i>Pay bill</div></a>
-                <a href="{% url 'sowaf:add-customer' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-user-voice'></i>Add customer</div></a>
+                <a href="{% url 'expenses:add-expenses' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-user-voice'></i>Add customer</div></a>
                 <a href="{% url 'sales:add-invoice' %}" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-file'></i>Add invoice</div></a>
                 <a href="" style="text-decoration:none"><div class="overviews" id=""><i class='bx bx-timer' ></i>Track time</div></a>
               </div>
