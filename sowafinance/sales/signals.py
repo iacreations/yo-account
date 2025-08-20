@@ -2,7 +2,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from sales.models import Newinvoice
-from expenses.models import Expense
+# from expenses.models import Expense
 from accounts.models import BankTransaction, SupplierPayment, Loan
 from accounts.utils import (
     record_sale,
@@ -25,12 +25,12 @@ def auto_post_sale(sender, instance, created, **kwargs):
 # ----------------------------
 # Expenses Signal
 # ----------------------------
-@receiver(post_save, sender=Expense)
-def auto_post_expense(sender, instance, created, **kwargs):
-    if created:
-        record_expense(instance)
+# @receiver(post_save, sender=Expense)
+# def auto_post_expense(sender, instance, created, **kwargs):
+#     if created:
+#         record_expense(instance)
 
-# ----------------------------
+# # ----------------------------
 # Bank Transactions Signal
 # ----------------------------
 @receiver(post_save, sender=BankTransaction)

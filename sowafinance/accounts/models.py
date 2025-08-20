@@ -20,7 +20,7 @@ class Account(models.Model):
 
 class Transaction(models.Model):
     date = models.DateTimeField(default=timezone.now)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255,null=True)
 
     def __str__(self):
         return f"{self.date} - {self.description}"
@@ -42,3 +42,22 @@ class Entry(models.Model):
 
     def __str__(self):
         return f"{self.account} | Dr {self.debit} Cr {self.credit}"
+
+# accounts/models.py
+
+class BankTransaction(models.Model):
+    TYPE_CHOICES = [('deposit','Deposit'),('withdrawal','Withdrawal')]
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    date = models.DateField(auto_now_add=True)
+    
+class SupplierPayment(models.Model):
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    from_bank = models.ForeignKey('BankTransaction', on_delete=models.CASCADE, null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    
+class Loan(models.Model):
+    TYPE_CHOICES = [('disbursement','Disbursement'),('repayment','Repayment')]
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    date = models.DateField(auto_now_add=True)
