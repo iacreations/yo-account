@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from accounts.models import Account
 from sowaf.models import Newcustomer
 # Create your models here.
 
@@ -55,6 +56,8 @@ class InvoiceItem(models.Model):
     def __str__(self):
         return f"{self.product} x {self.qty} for Invoice {self.invoice.id}"
     
+
+
 class Product(models.Model):
     PRODUCT_TYPES = [
         ('Inventory', 'Inventory'),
@@ -71,15 +74,14 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     sell_checkbox = models.BooleanField(default=False)
     sales_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    
-    income_account = models.CharField(
-        max_length=100,
-        choices=[
-            ('Sales', 'Sales'),
-            ('Services Income', 'Services Income'),
-            ('Other Income', 'Other Income'),
-        ],
-        blank=True, null=True
+
+    # ✅ Instead of CharField, link to CoA
+    income_account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        limit_choices_to={'type': 'INCOME'},  # only Income accounts can be picked
+        related_name="products",
+        null=True, blank=True
     )
 
     purchase_checkbox = models.BooleanField(default=False)
