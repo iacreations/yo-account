@@ -79,7 +79,7 @@ def add_invoice(request):
                 qty=qtys[i] or 0,
                 rate=rates[i] or 0,
                 amount=amounts[i] or 0,
-                tax='true' in tax_checkboxes[i] if i < len(tax_checkboxes) else False
+                tax = (tax_checkboxes[i].lower() == "on") if i < len(tax_checkboxes) else False
             )
 
         save_action = request.POST.get("save_action")
@@ -92,8 +92,8 @@ def add_invoice(request):
 
     # GET: render form with pre-filled dates (in YYYY-MM-DD format)
     customers = Newcustomer.objects.all()
-    today = timezone.now().date().strftime('%B-%d-%Y')       # <-- format to string
-    due_date = (timezone.now().date() + timezone.timedelta(days=30)).strftime('%B-%d-%Y')  # <-- format
+    today = timezone.now().date().strftime('%B %d, %Y')       # <-- format to string
+    due_date = (timezone.now().date() + timezone.timedelta(days=30)).strftime('%B %d, %Y')  # <-- format
 
     last_invoice = Newinvoice.objects.order_by('-id').first()
     next_invoice_id = 1000 if not last_invoice else int(last_invoice.invoice_id) + 1
@@ -178,7 +178,7 @@ def add_products(request):
         if action == "save&new":
             return redirect('sales:add-product')
         elif action == "save&close":
-            return redirect()  # You should have this view
+            return redirect('sales:sales')  # You should have this view
         return redirect('sales:sales')
     
     return render(request, 'Products_and_services_form.html', {})
