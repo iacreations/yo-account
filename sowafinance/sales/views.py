@@ -4,6 +4,7 @@ from openpyxl import Workbook
 from tempfile import NamedTemporaryFile
 from datetime import datetime, timedelta
 from django.utils import timezone
+from decimal import Decimal
 import openpyxl
 import csv
 import io
@@ -14,6 +15,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . models import Newinvoice,InvoiceItem,Product,BundleItem
 from sowaf.models import Newcustomer
+from accounts.utils import record_sale
 
 
 # sales view
@@ -26,83 +28,109 @@ def sales(request):
 # invoice form view
 
 def add_invoice(request):
-    if request.method == 'POST':
-        # Parse date strings to datetime.date format
-        raw_invoice_date = request.POST.get('invoice_date')
-        raw_invoice_due = request.POST.get('invoice_due')
+    if request.method == "POST":
+        # Parse customer and invoice info
+        customer_id = request.POST.get('customer')
+        customer=None
+        if customer_id:
+            try:
+                customer = Newcustomer.objects.get(pk=customer_id)
+            except Newcustomer.DoesNotExist:
+                customer=None
+        memo = request.POST.get("memo")
+        customs_notes = request.POST.get("customs_notes")
+        product_id = request.POST.get('product')
+        product=None
+        if product_id:
+            try:
+                product = Product.objects.get(pk=product_id)
+            except Product.DoesNotExist:
+                product=None
+        subtotal = Decimal(request.POST.get("subtotal") or 0)
+        discount = Decimal(request.POST.get("discount") or 0)
+        shipping = Decimal(request.POST.get("shipping") or 0)
 
-        try:
-            invoice_date = datetime.strptime(raw_invoice_date, "%B %d, %Y").date()
-        except ValueError:
-            invoice_date = timezone.now().date()
+        # Invoice totals
+        total_tax = Decimal("0")
+        total_due = Decimal("0")
 
-        try:
-            invoice_due = datetime.strptime(raw_invoice_due, "%B %d, %Y").date()
-        except ValueError:
-            invoice_due = timezone.now().date()
-
+        # Create invoice
         invoice = Newinvoice.objects.create(
-            invoice_id=request.POST.get('invoice_id'),
-            invoice_date=invoice_date,
-            invoice_due=invoice_due,
-            customer_id=request.POST.get('customer'),
-            email=request.POST.get('email'),
-            billing_address=request.POST.get('billing_address'),
-            shipping_address=request.POST.get('shipping_address'),
-            terms=request.POST.get('terms'),
-            sales_rep=request.POST.get('sales_rep'),
-            location=request.POST.get('location'),
-            tags=request.POST.get('tags'),
-            po_number=request.POST.get('po_number'),
-            memo=request.POST.get('memo'),
-            customs_notes=request.POST.get('customs_notes'),
-            attachments=request.FILES.get('attachments'),
-            subtotal=request.POST.get('subtotal') or 0,
-            discount=request.POST.get('discount') or 0,
-            tax=request.POST.get('tax') or 0,
-            shipping=request.POST.get('shipping') or 0,
-            total_due=request.POST.get('total_due') or 0,
+            customer=customer,
+            memo=memo,
+            product=product,
+            customs_notes=customs_notes,
+            subtotal=subtotal,
+            discount=discount,
+            tax=0,  # will update after items
+            shipping=shipping,
+            total_due=0,  # will update later
         )
 
-        products = request.POST.getlist('product[]')
-        descriptions = request.POST.getlist('description[]')
-        qtys = request.POST.getlist('qty[]')
-        rates = request.POST.getlist('rate[]')
-        amounts = request.POST.getlist('amount[]')
-        tax_checkboxes = request.POST.getlist('tax[]')
-
+        # Process line items
+        products = request.POST.getlist("product[]")
+        descriptions = request.POST.getlist("description[]")
+        qtys = request.POST.getlist("qty[]")
+        rates = request.POST.getlist("rate[]")
+        tax_checks = request.POST.getlist("tax-check") 
+        # calling in the line items
         for i in range(len(products)):
+            qty = Decimal(qtys[i] or 0)
+            rate = Decimal(rates[i] or 0)
+            amount = qty * rate
+     # checking if the tax check box is checked
+            is_taxable = str(i) in tax_checks or "on" in tax_checks  # adjust parsing
+            tax_amount = amount * Decimal("0.18") if is_taxable else Decimal("0.00")
+#  saving the invoice products
             InvoiceItem.objects.create(
                 invoice=invoice,
                 product=products[i],
                 description=descriptions[i],
-                qty=qtys[i] or 0,
-                rate=rates[i] or 0,
-                amount=amounts[i] or 0,
-                tax = (tax_checkboxes[i].lower() == "on") if i < len(tax_checkboxes) else False
+                qty=qty,
+                rate=rate,
+                amount=amount,
+                tax=tax_amount
             )
 
+            total_tax += tax_amount
+            total_due += amount + tax_amount
+
+        # Apply discount and shipping
+        total_due = total_due * (1 - discount/100) + shipping
+
+        # Update invoice totals
+        invoice.tax = total_tax
+        invoice.total_due = total_due
+        invoice.save()
+
+        # Post to CoA
+        record_sale(invoice)
+
+        # Decide redirect
         save_action = request.POST.get("save_action")
         if save_action == "save&new":
-            return redirect("sowaf:add-invoice")
+            return redirect("sales:add-invoice")
         elif save_action == "save&close":
             return redirect("sales:sales")
 
         return redirect("sales:add-invoice")
 
-    # GET: render form with pre-filled dates (in YYYY-MM-DD format)
-    customers = Newcustomer.objects.all()
-    today = timezone.now().date().strftime('%B %d, %Y')       # <-- format to string
-    due_date = (timezone.now().date() + timezone.timedelta(days=30)).strftime('%B %d, %Y')  # <-- format
+    # GET: show form
+    today = timezone.now().date()
+    due_date = today + timezone.timedelta(days=30)
 
-    last_invoice = Newinvoice.objects.order_by('-id').first()
+    last_invoice = Newinvoice.objects.order_by("-id").first()
     next_invoice_id = 1000 if not last_invoice else int(last_invoice.invoice_id) + 1
 
-    return render(request, 'invoice_form.html', {
-        'customers': customers,
-        'today': today,
-        'due_date': due_date,
-        'next_invoice_id': next_invoice_id,
+    products = Product.objects.all()  # for dropdown
+    customers = Newcustomer.objects.all()
+
+    return render(request, "invoice_form.html", {
+        "customers": customers,
+        "today": today.strftime("%d-%m-%Y"),
+        "due_date": due_date.strftime("%d-%m-%Y"),
+        "next_invoice_id": next_invoice_id,
+        "products": products,
     })
 #  invoice list
 def invoice_list(request):

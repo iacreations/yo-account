@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from datetime import timedelta
+from decimal import Decimal
 from accounts.models import Account
 from sowaf.models import Newcustomer
 # Create your models here.
@@ -37,26 +39,16 @@ class Newinvoice(models.Model):
             last_invoice = Newinvoice.objects.order_by('-id').first()
             next_id = 1000 if not last_invoice else int(last_invoice.invoice_id) + 1
             self.invoice_id = str(next_id)
-        super().save(*args, **kwargs)
+        
+        if not self.invoice_due:
+            # Set due date = invoice_date + 30 days
+            self.invoice_due = (self.invoice_date or timezone.now().date()) + timedelta(days=30)
 
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Customer={self.customer.customer_name} | invoice date- {self.invoice_date} | Invoice due date- {self.invoice_due} | sales_representative- {self.sales_rep}'
     
-class InvoiceItem(models.Model):
-    invoice = models.ForeignKey(Newinvoice, on_delete=models.CASCADE, related_name='items')
-    product = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    qty = models.PositiveIntegerField()
-    rate = models.DecimalField(max_digits=10, decimal_places=2)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    billable = models.BooleanField(default=False)
-    tax = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.product} x {self.qty} for Invoice {self.invoice.id}"
-    
-
 
 class Product(models.Model):
     PRODUCT_TYPES = [
@@ -95,3 +87,42 @@ class BundleItem(models.Model):
     bundle = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="bundle_items")
     product_name = models.CharField(max_length=255)
     quantity = models.PositiveIntegerField()
+    
+class InvoiceItem(models.Model):
+    invoice = models.ForeignKey(Newinvoice, on_delete=models.CASCADE, related_name='items')
+    # FK to product, but allow custom lines
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # 🔒 snapshots to preserve history
+    name_snapshot = models.CharField(max_length=255, blank=True)   # product name at sale time
+    description = models.TextField(blank=True, null=True)
+    income_account = models.ForeignKey(  # account used for posting this line
+        Account, on_delete=models.PROTECT,
+        limit_choices_to={'type': 'INCOME'},
+        null=True, blank=True
+    )
+
+    # quantities & money as decimals
+    qty = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("1.00"))
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0.00"))  # e.g. 18.00 for 18%
+    line_total = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+
+    billable = models.BooleanField(default=False)
+    tax = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        # fill snapshots from product if not provided
+        if self.product and not self.name_snapshot:
+            self.name_snapshot = self.product.name
+        if self.product and not self.income_account_id:
+            self.income_account = self.product.income_account
+
+        # compute line_total
+        self.line_total = (self.qty or 0) * (self.unit_price or 0)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        label = self.name_snapshot or (self.product.name if self.product else "Custom line")
+        return f"{label} x {self.qty} (Invoice {self.invoice_id})"   
+
