@@ -1,0 +1,73 @@
+{% load static %}
+{% include 'includes/navbar.html' %}
+{% include 'includes/sidebar.html' %}
+<div class="action">
+<a href="{% url 'sales:invoices' %}" class="text-decoration-none" style="color: #39B54B;">< Back</a>
+</div>
+    <div class="main_body mb-5" style="background-color: #fff; border: 1px solid; margin-left: 36%;margin-right: 20%;">
+        <h3 class="" style="color: #39B54B; text-align:center;">SOWA INVOICE</h3>
+        <hr>
+      <div class="top-left d-flex" style="margin-top: 5%;">
+     <img src=" {% static 'sowaf/images/yo-logo.png' %} " class="ms-5" alt="" style="width: 50px; height:50px;" /> 
+     <h5 class="ms-auto me-5" style="">Invoice No.</h5>
+      </div>
+      <div class="dates my-5 d-flex justify-content-between">
+        <h5 class="ms-5"> Date created: </h5>
+        <h5 class="me-5"> Due date: </h5>
+    </div>
+      <div class="address d-flex">
+        <div class="client ms-5" style="">
+             <h5> Billed to: </h5>
+             <p>Customer</p>
+             <p>Billing address</p>
+             <p>Email</p>
+             <p>Sales Representative</p>
+        </div>
+        <div class="company ms-5 ms-auto me-5" style="">
+          <h5> Billed from: </h5>
+             <p>Yo Accounts</p>
+             <p>Location</p>
+             <p>Email</p>
+             <p>Created_by</p>
+        </div>   
+      </div>
+       <table class="table mt-3 ms-5 me-5">
+      <thead class="thead-light">
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in invoice.items %}
+        <tr>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>UGX{{ item.unit_price }}</td>
+          <td>UGX{{ item.amount }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td colspan="3" class="text-left">Total</td>
+          <td>UGX{{ invoice.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="accounts d-flex my-4">
+      <div class="deductions ms-5">
+      <h5> Tax(10%): </h5>
+      <h5> Discount(%): </h5>
+      <h5> Shipping: </h5>
+     </div>
+      <div class="totals ms-auto me-5">
+      <h5> Subtotal: </h5>
+      <h5> Total amount to pay: </h5>
+      </div>
+    </div>
+        <span style="float: right;" class="mt-2 mb-2">
+            <button class="button" type="button"><i class='bx bx-printer' style="color: white;"></i>Print</button>
+          </span>
+    </div>
+    {% include 'includes/footer.html' %}
