@@ -230,8 +230,11 @@
   <select class="form-control" name="customer" required>
     <option id="option" style="background-color: green; color: white;" value="">-- Select Customer --</option>
     {% for customer in customers %}
-      <option id="option" value="{{ customer.id }}">{{ customer.customer_name }}</option>
+      <option id="option" value="{{ customer.id }}">{{ customer.customer_name }}
+      </option>
+      
     {% endfor %}
+    <option>➕ Add New</option>
   </select>
 </div>
     <div class="form-group"><label>Date created</label><input name="invoice_" type="date" placeholder="dd/mm/yyyy" value=""></div>
@@ -272,7 +275,9 @@
                 {{ product.name }}
               </option>
             {% endfor %}
+            
           </select>
+           <option>➕ Add New</option>
         </td>
         <td><input type="text" class="form-control description" name="description[]" readonly></td>
         <td><input type="number" class="form-control qty" name="qty[]" value="1" min="1" onchange="calculateRow(this)"></td>
