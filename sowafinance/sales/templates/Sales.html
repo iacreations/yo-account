@@ -94,7 +94,7 @@ padding: 3%;
         </div>
       </div>
 
-      <a href="{% url 'sales:add-products' %}" style="text-decoration: none;">
+      <a href="{% url 'inventory:add-products' %}" style="text-decoration: none;">
         <button class="button" style="width: fit-content;">
         <span class="button_text">New Products/Services</span>
         <span class="button_icon">
@@ -224,7 +224,6 @@ padding: 3%;
                     </tr>
                   </thead>
                   <tbody>
-                    {% for product in products %}
                     <tr>
                       <td><i class='bx bx-user-circle'></i></td>
                       <td>{{ product.name }}</td>
@@ -252,7 +251,7 @@ padding: 3%;
               </span>
                       </td>
                     </tr>
-                   {% endfor %}
+                  
                   </tbody>
                 </table>
               </div>

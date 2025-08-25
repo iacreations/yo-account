@@ -5,6 +5,7 @@ from datetime import timedelta
 from decimal import Decimal
 from accounts.models import Account
 from sowaf.models import Newcustomer
+from inventory.models import Product
 # Create your models here.
 
 
@@ -48,45 +49,6 @@ class Newinvoice(models.Model):
 
     def __str__(self):
         return f'Customer={self.customer.customer_name} | invoice date- {self.invoice_date} | Invoice due date- {self.invoice_due} | sales_representative- {self.sales_rep}'
-    
-
-class Product(models.Model):
-    PRODUCT_TYPES = [
-        ('Inventory', 'Inventory'),
-        ('Non-Inventory', 'Non-Inventory'),
-        ('Service', 'Service'),
-        ('Bundle', 'Bundle'),
-    ]
-
-    type = models.CharField(max_length=20, choices=PRODUCT_TYPES)
-    name = models.CharField(max_length=255)
-    sku = models.CharField(max_length=100, blank=True, null=True)
-    category = models.CharField(max_length=100, blank=True, null=True)
-    class_field = models.CharField("Class", max_length=100, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    sell_checkbox = models.BooleanField(default=False)
-    sales_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
-    # ✅ Instead of CharField, link to CoA
-    income_account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        limit_choices_to={'type': 'INCOME'},  # only Income accounts can be picked
-        related_name="products",
-        null=True, blank=True
-    )
-
-    purchase_checkbox = models.BooleanField(default=False)
-    is_bundle = models.BooleanField(default=False)
-    display_bundle_contents = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
-class BundleItem(models.Model):
-    bundle = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="bundle_items")
-    product_name = models.CharField(max_length=255)
-    quantity = models.PositiveIntegerField()
     
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Newinvoice, on_delete=models.CASCADE, related_name='items')

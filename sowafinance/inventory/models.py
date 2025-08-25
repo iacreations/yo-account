@@ -20,46 +20,47 @@ class Product(models.Model):
     class_field = models.CharField("Class", max_length=100, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     sell_checkbox = models.BooleanField(default=False)
-    sales_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
-    # ✅ Instead of CharField, link to CoA
-    income_account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        limit_choices_to={'type': 'INCOME'},  # only Income accounts can be picked
-        related_name="products",
-        null=True, blank=True
-    )
-
+    sales_price = models.DecimalField(max_digits=10, decimal_places=2, 
+    blank=True, null=True)
+    income_account = models.CharField(max_length=200)
     purchase_checkbox = models.BooleanField(default=False)
     is_bundle = models.BooleanField(default=False)
     display_bundle_contents = models.BooleanField(default=False)
 
-    # 🔗 Link to CoA
-    income_account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        limit_choices_to={'type': 'INCOME'},
-        related_name="income_products",
-        null=True, blank=True
-    )
-    expense_account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        limit_choices_to={'type': 'EXPENSE'},
-        related_name="expense_products",
-        null=True, blank=True
-    )
-    inventory_account = models.ForeignKey(
-        Account,
-        on_delete=models.PROTECT,
-        limit_choices_to={'type': 'ASSET'},
-        related_name="asset_products",
-        null=True, blank=True
-    )
+    # # ✅ Instead of CharField, link to CoA
+    # income_account = models.ForeignKey(
+    #     Account,
+    #     on_delete=models.PROTECT,
+    #     limit_choices_to={'type': 'INCOME'},  # only Income accounts can be picked
+    #     related_name="products",
+    #     null=True, blank=True
+    # )
 
-    def __str__(self):
-        return self.name
+    # # 🔗 Link to CoA
+    # income_account = models.ForeignKey(
+    #     Account,
+    #     on_delete=models.PROTECT,
+    #     limit_choices_to={'type': 'INCOME'},
+    #     related_name="income_products",
+    #     null=True, blank=True
+    # )
+    # expense_account = models.ForeignKey(
+    #     Account,
+    #     on_delete=models.PROTECT,
+    #     limit_choices_to={'type': 'EXPENSE'},
+    #     related_name="expense_products",
+    #     null=True, blank=True
+    # )
+    # inventory_account = models.ForeignKey(
+    #     Account,
+    #     on_delete=models.PROTECT,
+    #     limit_choices_to={'type': 'ASSET'},
+    #     related_name="asset_products",
+    #     null=True, blank=True
+    # )
+
+    # def __str__(self):
+    #     return self.name
 
 
 

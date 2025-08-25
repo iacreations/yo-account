@@ -26,6 +26,7 @@ urlpatterns = [
         path('', include('sowaf.urls')),         # dashboard and home
         path('sales/', include('sales.urls')),   # sales module
         path('expenses/', include('expenses.urls')),  # expenses
+        path('inventory/', include('inventory.urls')),  # inventory
     ])),
     path('admin/', admin.site.urls),
 ]

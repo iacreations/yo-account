@@ -45,7 +45,7 @@
   <h2 class="title">Product/Service Entry Form</h2>
 
   <div class="section-wrapper">
-    <form method="POST" action="{% url 'sales:add-products' %}">
+    <form method="POST" action="{% url 'inventory:add-products' %}">
   {% csrf_token %}
 
     <div class="form-grid">
@@ -60,25 +60,19 @@
       </div>
       <div class="form-group"><label>Name</label><input name="name" type="text"></div>
       <div class="form-group"><label>SKU</label><input name="sku" type="text"></div>
-  
-<div class="form-group">
-        <label>Type</label>
-        <select id="typeSelect" name="type" onchange="handleTypeChange()">
-          <option value="Non-Inventory" {% if product.type == "Non-Inventory" %}selected{% endif %}>Non-Inventory</option>
-          <option value="Inventory" {% if product.type == "Inventory" %}selected{% endif %}>Inventory</option>
-          <option value="Service" {% if product.type == "Service" %}selected{% endif %}>Service</option>
-          <option value="Bundle" {% if product.type == "Bundle" %}selected{% endif %}>Bundle</option>
-        </select>
-      </div>
-
-
+          <div class="form-group">
+  <label>Category</label>
+  <select id="typeSelect" name="category" onchange="handleTypeChange()">
+    <!-- <option id="option" style="background-color: green; color: white;" value="">-- Select Category --</option> -->
+      <option id="option" value="Good" {% if product.category == "Good" %}selected{% endif %}>Good</option>
+      <option id="option" value="Service" {% if product.category == "Service" %}selected{% endif %}>Service</option>
+  </select>
+</div>
       <div class="form-group"><label>Class</label><input name="class_field" type="text"></div>
-      <div class="form-group"><label>Description</label><textarea name="description" rows="2"></textarea></div>
-    </div>
-
-    <div class="form-group">
+<div></div>
+    <!-- <div class="form-group">
       <input name="sellCheckbox" type="checkbox" id="sellCheckbox">
-      <label for="sellCheckbox">I sell this product/service to my customers.</label>
+      <label for="sellCheckbox" class="mx-auto">I sell this product/service to my customers.</label>
     </div>
 
     <div class="form-grid">
@@ -92,18 +86,65 @@
         </select>
       </div>
     </div>
+  </div> -->
+  <div></div>
+  <div></div>
+<!-- selling product -->
+  <div class="form-group">
+  <label for="sellCheckbox" class="">I sell this product/service to my customers.</label>
+    <input name="sell_checkbox" type="checkbox" id="sellCheckbox" onchange="toggleSellFields()">
   </div>
 
-  <div class="section-wrapper">
-    <button class="collapsible" type="button" onclick="toggleSection(this)">Purchasing Information</button>
-    <div class="content">
+<div id="sellFields" style="display:none;">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Sales Price / Rate</label>
+      <input name="sales_price" type="number">
+    </div>
+    <div class="form-group">
+      <label>Income Account</label>
+      <select name="income_account">
+        <option value="Sales">Sales</option>
+        <option value="Services Income">Services Income</option>
+        <option value="Other Income">Other Income</option>
+      </select>
+    </div>
+    </div>
+</div>
+</div>
+
+
+<div class="form-group" class="">
+ <label for="purchaseCheckbox">I purchase this product/service from a supplier.</label>
+   <input name="purchase_checkbox" type="checkbox" id="purchaseCheckbox" onchange="togglePurchaseFields()" class="my-5">
+</div>
+
+<div id="purchaseFields" style="display:none;">
+  <div class="form-grid">
+       <div class="form-group">
       <div class="form-group">
-        <input name="purchaseCheckbox" type="checkbox" id="purchaseCheckbox">
-        <label for="purchaseCheckbox">I purchase this product/service from a supplier.</label>
-      </div>
+      <label>Supplier</label>
+      <input type="text" name="supplier" >
+    </div>
+    <div class="form-group">
+      <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="2"></textarea>
+    </div>
+      <label>Expense Account</label>
+      <select name="expense_account">
+        <option value="Cost of Goods Sold">Cost of Goods Sold</option>
+        <option value="Supplies Expense">Supplies Expense</option>
+      </select>
     </div>
   </div>
+</div>
 
+<!-- bundle items -->
   <div id="bundleExtras" class="section-wrapper" style="display: none;">
     <div class="form-group">
       <button class="collapsible" type="button" onclick="toggleSection(this)">Bundles Information</button>
@@ -115,13 +156,18 @@
       <table id="bundle-table">
         <thead>
           <tr>
-            <th>#</th>
             <th>Product/Service</th>
             <th>Qty</th>
             <th>Operations</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <tr>
+      <td><input type="text" name="bundle_product_name[]" /></td>
+      <td><input type="number" name="bundle_product_qty[]" /></td>
+      <td><button class="delete-btn bx bx-trash" onclick="deleteRow(this)"></button></td>
+          </tr>
+        </tbody>
       </table>
       <button class="btn-light-green" onclick="addBundleRow()">Add Line</button>
     </div>
@@ -129,20 +175,22 @@
 
   <div class="footer">
     <a href="{% url 'sales:sales' %}" class="btn btn-green" style="text-decoration:none;">Cancel</a>
-        <div></div>
+  
     <button class="btn btn-light-green" onclick="window.print()">Print / Preview</button>
         <div class="dropdown">
           <button type="submit" class="btn btn-green">Save ▼</button>
           <div class="dropdown-menu">
             <button type="submit" name="save_action" style="font-size: 1em;" value="save">Save</button>
-            <button type="submit" name="save_action" style="font-size: 1em;" value="save&new">Save & New</button>
+            <button type="submit" name="save_action" style="font-size: 1em;" value="save&new">
+              Save & New
+            </button>
             <button type="submit" name="save_action" style="font-size: 1em;" value="save&close">Save & Close
-
-    </button>
+            </button>
           </div>
-        </div>
-  </form>
-  </div>
+</div>
+</div>
+</form>
+</div>
 </div>
 <script src=" {% static 'sowaf/styles/script.js' %} "></script>
 <script>
@@ -188,6 +236,22 @@
   function saveForm(action) {
     alert(`Form saved with action: ${action}`);
   }
+  function toggleSellFields() {
+  const sellChecked = document.getElementById("sellCheckbox").checked;
+  document.getElementById("sellFields").style.display = sellChecked ? "block" : "none";
+}
+
+function togglePurchaseFields() {
+  const purchaseChecked = document.getElementById("purchaseCheckbox").checked;
+  document.getElementById("purchaseFields").style.display = purchaseChecked ? "block" : "none";
+}
+
+// Run once when page loads (so edit form shows saved values correctly)
+window.onload = function() {
+  toggleSellFields();
+  togglePurchaseFields();
+};
+
 </script>
 </body>
 </html>

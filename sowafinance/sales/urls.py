@@ -10,7 +10,6 @@ urlpatterns = [
     path('sales/add/invoice', views.add_invoice, name='add-invoice'),
     path('sales/add/receipts', views.add_receipt, name='add-receipt'),
     path('sales/add/payments', views.add_payment, name='add-payments'),
-    path('sales/add/products', views.add_products, name='add-products'),
     path('sales/add/invoice', views.add_invoice, name='add-invoice'),
     path('sales/invoices/', views.invoice_list, name='invoices'),
     path('sales/full-invoice-details/', views.full_invoice_details, name='full-invoice-details'),
