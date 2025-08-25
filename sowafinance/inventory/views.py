@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . models import Product,BundleItem
 from accounts.utils import record_sale
+from inventory.models import Newsupplier
 
 # Create your views here.
 
@@ -26,12 +27,21 @@ def add_products(request):
         category = request.POST.get("category")
         class_field = request.POST.get("class_field")
         description = request.POST.get("description")
-        sell_checkbox = request.POST.get("sellCheckbox") == 'on'
+        sell_checkbox = request.POST.get("sell_checkbox") == 'on'
         sales_price = request.POST.get("sales_price")
         income_account = request.POST.get("income_account")
-        purchase_checkbox = request.POST.get("purchaseCheckbox") == 'on'
-        display_bundle_contents = request.POST.get("displayBundleContents") == 'on'
+        expense_account = request.POST.get("expense_account")
 
+        supplier_id = request.POST.get('supplier')
+        supplier=None
+        if supplier_id:
+            try:
+                supplier = Newsupplier.objects.get(pk=supplier_id)
+            except Newsupplier.DoesNotExist:
+                supplier=None
+
+        purchase_checkbox = request.POST.get("purchpurchase_checkbox") == 'on'
+        display_bundle_contents = request.POST.get("display_bundle_contents") == 'on'
         products = Product.objects.create(
             type=type,
             name=name,
@@ -40,24 +50,25 @@ def add_products(request):
             class_field=class_field,
             description=description,
             sell_checkbox=sell_checkbox,
+            supplier=supplier,
             sales_price=sales_price or None,
             income_account=income_account,
+            expense_account=expense_account,
             purchase_checkbox=purchase_checkbox,
             is_bundle=(type == "Bundle"),
             display_bundle_contents=display_bundle_contents,
         )
 
-        # Handle bundle items
         if type == "Bundle":
-            names = request.POST.getlist("bundle_product_name[]")
+            product_ids = request.POST.getlist("bundle_product_id[]")
             quantities = request.POST.getlist("bundle_product_qty[]")
-            for name, qty in zip(names, quantities):
-                BundleItem.objects.create(
-                    bundle=products,
-                    product_name=name,
-                    quantity=qty
-                )
-
+            for prod_id, qty in zip(product_ids, quantities):
+                if prod_id:
+                    BundleItem.objects.create(
+                        bundle=products,   # singular here
+                        product_id=int(prod_id),
+                        quantity=int(qty) if qty else 1
+                    )
         # Handle Save action
         action = request.POST.get("save_action")
         if action == "save&new":
@@ -65,6 +76,10 @@ def add_products(request):
         elif action == "save&close":
             return redirect('sales:sales')  # You should have this view
         return redirect('sales:sales')
-    
-    return render(request, 'Products_and_services_form.html', {})
+    all_products = Product.objects.all()
+    suppliers = Newsupplier.objects.all()
+    return render(request, 'Products_and_services_form.html', {
+        'products':all_products,
+        'suppliers':suppliers,
+    })
 

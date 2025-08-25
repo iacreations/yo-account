@@ -96,7 +96,7 @@ def add_invoice(request):
             total_due += amount + tax_amount
 
         # Apply discount and shipping
-        total_due = total_due * (1 - discount/100) + shipping
+        total_due =  + shipping
 
         # Update invoice totals
         invoice.tax = total_tax

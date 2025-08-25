@@ -70,29 +70,12 @@
 </div>
       <div class="form-group"><label>Class</label><input name="class_field" type="text"></div>
 <div></div>
-    <!-- <div class="form-group">
-      <input name="sellCheckbox" type="checkbox" id="sellCheckbox">
-      <label for="sellCheckbox" class="mx-auto">I sell this product/service to my customers.</label>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group"><label>Sales Price / Rate</label><input name="sales_price" type="number"></div>
-      <div class="form-group">
-        <label>Income Account</label>
-        <select name="income_account">
-          <option value="Sales" {% if product.income_account == "Sales" %}selected{% endif %}>Sales</option>
-          <option value="Services Income" {% if product.income_account == "Services Income" %}selected{% endif %}>Services Income</option>
-          <option value="Other Income" {% if product.income_account == "Other Income" %}selected{% endif %}>Other Income</option>
-        </select>
-      </div>
-    </div>
-  </div> -->
   <div></div>
   <div></div>
 <!-- selling product -->
   <div class="form-group">
   <label for="sellCheckbox" class="">I sell this product/service to my customers.</label>
-    <input name="sell_checkbox" type="checkbox" id="sellCheckbox" onchange="toggleSellFields()">
+    <input name="sell_checkbox" type="checkbox" id="sellCheckbox" name="sell_checkbox" onchange="toggleSellFields()">
   </div>
 
 <div id="sellFields" style="display:none;">
@@ -125,16 +108,21 @@
 
 <div id="purchaseFields" style="display:none;">
   <div class="form-grid">
-       <div class="form-group">
-      <div class="form-group">
-      <label>Supplier</label>
-      <input type="text" name="supplier" >
-    </div>
+ <div class="form-group">
+  <label>Supplier</label>
+  <select class="form-control" name="supplier" required>
+    <option id="option" style="background-color: green; color: white;" value="">-- Select supplier --</option>
+    {% for supplier in suppliers %}
+      <option id="option" value="{{ supplier.id }}">{{ supplier.supplier_name }}</option>
+    {% endfor %}
+    </select>
+  </div>
     <div class="form-group">
       <div class="form-group">
       <label>Description</label>
       <textarea name="description" rows="2"></textarea>
     </div>
+    <div class="form-group">
       <label>Expense Account</label>
       <select name="expense_account">
         <option value="Cost of Goods Sold">Cost of Goods Sold</option>
@@ -148,7 +136,7 @@
   <div id="bundleExtras" class="section-wrapper" style="display: none;">
     <div class="form-group">
       <button class="collapsible" type="button" onclick="toggleSection(this)">Bundles Information</button>
-      <input name="displayBundleContents" type="checkbox" id="displayBundleContents" onchange="toggleBundleTable()">
+      <input name="display_bundle_contents" type="checkbox" id="displayBundleContents" onchange="toggleBundleTable()">
       <label for="displayBundleContents">Display contents when printing or sending transactions.</label>
     </div>
 
@@ -163,6 +151,13 @@
         </thead>
         <tbody>
           <tr>
+             <td>
+        <select name="bundle_product_id[]">
+        {% for p in products %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+      </td>
       <td><input type="text" name="bundle_product_name[]" /></td>
       <td><input type="number" name="bundle_product_qty[]" /></td>
       <td><button class="delete-btn bx bx-trash" onclick="deleteRow(this)"></button></td>
